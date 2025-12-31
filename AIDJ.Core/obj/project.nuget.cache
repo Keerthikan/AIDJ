@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "vPSbCcCtYAb6f6LWxruav23JFTe/9GEXmj5hwNDTcyN+F1gKNFg2BPV2TEIltmoGdJadLD2gbfu/g9i91eJmcA==",
+  "success": true,
+  "projectFilePath": "/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/AIDJ.Core.csproj",
+  "expectedPackageFiles": [
+    "/Users/keerthikanratnarajah/.nuget/packages/managedbass/4.0.2/managedbass.4.0.2.nupkg.sha512",
+    "/Users/keerthikanratnarajah/.nuget/packages/managedbass.fx/4.0.2/managedbass.fx.4.0.2.nupkg.sha512",
+    "/Users/keerthikanratnarajah/.nuget/packages/netcoreaudio/2.0.0/netcoreaudio.2.0.0.nupkg.sha512",
+    "/Users/keerthikanratnarajah/.nuget/packages/taglibsharp/2.3.0/taglibsharp.2.3.0.nupkg.sha512"
+  ],
+  "logs": []
+}

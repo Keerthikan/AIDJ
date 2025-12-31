@@ -1,0 +1,22 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDJ", "AIDJ\AIDJ.csproj", "{470942DE-268F-43F6-A0C1-8EFB91289550}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AIDJ.Core", "AIDJ.Core\AIDJ.Core.csproj", "{D507F46F-10EC-438A-9AB2-AC46B1679388}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{470942DE-268F-43F6-A0C1-8EFB91289550}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{470942DE-268F-43F6-A0C1-8EFB91289550}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{470942DE-268F-43F6-A0C1-8EFB91289550}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{470942DE-268F-43F6-A0C1-8EFB91289550}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D507F46F-10EC-438A-9AB2-AC46B1679388}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D507F46F-10EC-438A-9AB2-AC46B1679388}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D507F46F-10EC-438A-9AB2-AC46B1679388}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D507F46F-10EC-438A-9AB2-AC46B1679388}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

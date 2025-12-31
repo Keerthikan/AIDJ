@@ -1,0 +1,105 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v5.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v5.0": {
+      "AIDJ/1.0.0": {
+        "dependencies": {
+          "AIDJ.Core": "1.0.0"
+        },
+        "runtime": {
+          "AIDJ.dll": {}
+        }
+      },
+      "ManagedBass/4.0.2": {
+        "runtime": {
+          "lib/netstandard2.0/ManagedBass.dll": {
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.0.2.0"
+          }
+        }
+      },
+      "ManagedBass.Fx/4.0.2": {
+        "dependencies": {
+          "ManagedBass": "4.0.2"
+        },
+        "runtime": {
+          "lib/netstandard2.0/ManagedBass.Fx.dll": {
+            "assemblyVersion": "4.0.2.0",
+            "fileVersion": "4.0.2.0"
+          }
+        }
+      },
+      "NetCoreAudio/2.0.0": {
+        "runtime": {
+          "lib/netstandard2.1/NetCoreAudio.dll": {
+            "assemblyVersion": "2.0.0.0",
+            "fileVersion": "2.0.0.0"
+          }
+        }
+      },
+      "TagLibSharp/2.3.0": {
+        "runtime": {
+          "lib/netstandard2.0/TagLibSharp.dll": {
+            "assemblyVersion": "2.3.0.0",
+            "fileVersion": "2.3.0.0"
+          }
+        }
+      },
+      "AIDJ.Core/1.0.0": {
+        "dependencies": {
+          "ManagedBass": "4.0.2",
+          "ManagedBass.Fx": "4.0.2",
+          "NetCoreAudio": "2.0.0",
+          "TagLibSharp": "2.3.0"
+        },
+        "runtime": {
+          "AIDJ.Core.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "AIDJ/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "ManagedBass/4.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-EzVnBGxqjSzRgLuo94Muauvk1SPwD3LOOHp+4c33iC1EBez+mDW71+gJL35E9V5U5Sb/WNeJxnzHtUNOeOfqdw==",
+      "path": "managedbass/4.0.2",
+      "hashPath": "managedbass.4.0.2.nupkg.sha512"
+    },
+    "ManagedBass.Fx/4.0.2": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kG7pGxrICvytN3yXuM+z5CJqiEbGyGFndVyBax556rSW+vDyyZ8+UCShA8ampaqdoWoIj7K/seAOoe/r0Uen/w==",
+      "path": "managedbass.fx/4.0.2",
+      "hashPath": "managedbass.fx.4.0.2.nupkg.sha512"
+    },
+    "NetCoreAudio/2.0.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-uDZcOG1pHcfxoKr9LrYvh+zHf+3JlL3tWly+o4mICHm5s9INBzcJVWiO2hh17RPyZQ0Fvqiw4qsa396l77JM0Q==",
+      "path": "netcoreaudio/2.0.0",
+      "hashPath": "netcoreaudio.2.0.0.nupkg.sha512"
+    },
+    "TagLibSharp/2.3.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-Qo4z6ZjnIfbR3Us1Za5M2vQ97OWZPmODvVmepxZ8XW0UIVLGdO2T63/N3b23kCcyiwuIe0TQvMEQG8wUCCD1mA==",
+      "path": "taglibsharp/2.3.0",
+      "hashPath": "taglibsharp.2.3.0.nupkg.sha512"
+    },
+    "AIDJ.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}

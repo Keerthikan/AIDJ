@@ -1,0 +1,46 @@
+﻿<Properties StartupConfiguration="{470942DE-268F-43F6-A0C1-8EFB91289550}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="AIDJ/TransitionLogger.cs">
+    <Files>
+      <File FileName="AIDJ/Program.cs" Line="104" Column="18" />
+      <File FileName="AIDJ.Core/Services/TrackAnalyzer.cs" Line="20" Column="1" />
+      <File FileName="AIDJ.Core/Services/TrackMetadata.cs" Line="3" Column="19" />
+      <File FileName="AIDJ.Core/Models/TrackData.cs" Line="18" Column="1" />
+      <File FileName="AIDJ.Core/Services/TransitionService.cs" Line="100" Column="82" />
+      <File FileName="AIDJ.Core/Services/TransitionPlanning.cs" Line="304" Column="38" />
+      <File FileName="AIDJ.Core/Services/TrackSelection.cs" Line="56" Column="1" />
+      <File FileName="AIDJ.Core/Services/MusicLibraryService.cs" Line="1" Column="1" />
+      <File FileName="AIDJ.Core/Models/AnalysisContainer.cs" Line="1" Column="1" />
+      <File FileName="AIDJ/ConsoleVisualizer.cs" Line="23" Column="36" />
+      <File FileName="AIDJ.Core/Services/DjEngine.cs" Line="95" Column="35" />
+      <File FileName="AIDJ/TransitionLogger.cs" Line="18" Column="73" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="AIDJ" expanded="True">
+            <Node name="AIDJ" expanded="True">
+              <Node name="TransitionLogger.cs" selected="True" />
+            </Node>
+            <Node name="AIDJ.Core" expanded="True">
+              <Node name="Models" expanded="True" />
+              <Node name="Services" expanded="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="MonoDevelop.Debugger.WatchPad">
+        <State />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.AIDJ PreferredExecutionTarget="MonoDevelop.Default" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Breakpoint file="/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/Services/TrackAnalysisService.cs" relfile="AIDJ.Core/Services/TrackAnalysisService.cs" line="20" column="1" />
+      <Breakpoint file="/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/Services/TrackAnalysisService.cs" relfile="AIDJ.Core/Services/TrackAnalysisService.cs" line="71" column="1" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

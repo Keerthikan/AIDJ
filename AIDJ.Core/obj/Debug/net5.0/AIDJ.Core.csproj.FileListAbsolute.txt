@@ -1,0 +1,12 @@
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.csproj.AssemblyReference.cache
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.GeneratedMSBuildEditorConfig.editorconfig
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.AssemblyInfoInputs.cache
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.AssemblyInfo.cs
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.csproj.CoreCompileInputs.cache
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/bin/Debug/net5.0/AIDJ.Core.deps.json
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/bin/Debug/net5.0/AIDJ.Core.dll
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/bin/Debug/net5.0/ref/AIDJ.Core.dll
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/bin/Debug/net5.0/AIDJ.Core.pdb
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.dll
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/ref/AIDJ.Core.dll
+/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/Debug/net5.0/AIDJ.Core.pdb

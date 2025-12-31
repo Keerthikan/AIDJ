@@ -1,0 +1,199 @@
+{
+  "version": 3,
+  "targets": {
+    "net5.0": {
+      "ManagedBass/4.0.2": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/ManagedBass.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ManagedBass.dll": {}
+        }
+      },
+      "ManagedBass.Fx/4.0.2": {
+        "type": "package",
+        "dependencies": {
+          "ManagedBass": "4.0.2"
+        },
+        "compile": {
+          "lib/netstandard2.0/ManagedBass.Fx.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/ManagedBass.Fx.dll": {}
+        }
+      },
+      "NetCoreAudio/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/NetCoreAudio.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.1/NetCoreAudio.dll": {}
+        }
+      },
+      "TagLibSharp/2.3.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/TagLibSharp.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/TagLibSharp.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "ManagedBass/4.0.2": {
+      "sha512": "EzVnBGxqjSzRgLuo94Muauvk1SPwD3LOOHp+4c33iC1EBez+mDW71+gJL35E9V5U5Sb/WNeJxnzHtUNOeOfqdw==",
+      "type": "package",
+      "path": "managedbass/4.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "icon.png",
+        "lib/net45/ManagedBass.dll",
+        "lib/net45/ManagedBass.xml",
+        "lib/net8.0/ManagedBass.dll",
+        "lib/net8.0/ManagedBass.xml",
+        "lib/netstandard2.0/ManagedBass.dll",
+        "lib/netstandard2.0/ManagedBass.xml",
+        "managedbass.4.0.2.nupkg.sha512",
+        "managedbass.nuspec"
+      ]
+    },
+    "ManagedBass.Fx/4.0.2": {
+      "sha512": "kG7pGxrICvytN3yXuM+z5CJqiEbGyGFndVyBax556rSW+vDyyZ8+UCShA8ampaqdoWoIj7K/seAOoe/r0Uen/w==",
+      "type": "package",
+      "path": "managedbass.fx/4.0.2",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.md",
+        "icon.png",
+        "lib/net45/ManagedBass.Fx.dll",
+        "lib/net45/ManagedBass.Fx.xml",
+        "lib/net8.0/ManagedBass.Fx.dll",
+        "lib/net8.0/ManagedBass.Fx.xml",
+        "lib/netstandard2.0/ManagedBass.Fx.dll",
+        "lib/netstandard2.0/ManagedBass.Fx.xml",
+        "managedbass.fx.4.0.2.nupkg.sha512",
+        "managedbass.fx.nuspec"
+      ]
+    },
+    "NetCoreAudio/2.0.0": {
+      "sha512": "uDZcOG1pHcfxoKr9LrYvh+zHf+3JlL3tWly+o4mICHm5s9INBzcJVWiO2hh17RPyZQ0Fvqiw4qsa396l77JM0Q==",
+      "type": "package",
+      "path": "netcoreaudio/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "README.md",
+        "icon.jpg",
+        "lib/netstandard2.1/NetCoreAudio.dll",
+        "netcoreaudio.2.0.0.nupkg.sha512",
+        "netcoreaudio.nuspec"
+      ]
+    },
+    "TagLibSharp/2.3.0": {
+      "sha512": "Qo4z6ZjnIfbR3Us1Za5M2vQ97OWZPmODvVmepxZ8XW0UIVLGdO2T63/N3b23kCcyiwuIe0TQvMEQG8wUCCD1mA==",
+      "type": "package",
+      "path": "taglibsharp/2.3.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net462/TagLibSharp.dll",
+        "lib/net462/TagLibSharp.pdb",
+        "lib/net462/TaglibSharp.xml",
+        "lib/netstandard2.0/TagLibSharp.dll",
+        "lib/netstandard2.0/TagLibSharp.pdb",
+        "lib/netstandard2.0/TaglibSharp.xml",
+        "taglibsharp.2.3.0.nupkg.sha512",
+        "taglibsharp.nuspec"
+      ]
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net5.0": [
+      "ManagedBass >= 4.0.2",
+      "ManagedBass.Fx >= 4.0.2",
+      "NetCoreAudio >= 2.0.0",
+      "TagLibSharp >= 2.3.0"
+    ]
+  },
+  "packageFolders": {
+    "/Users/keerthikanratnarajah/.nuget/packages/": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/AIDJ.Core.csproj",
+      "projectName": "AIDJ.Core",
+      "projectPath": "/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/AIDJ.Core.csproj",
+      "packagesPath": "/Users/keerthikanratnarajah/.nuget/packages/",
+      "outputPath": "/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ.Core/obj/",
+      "projectStyle": "PackageReference",
+      "configFilePaths": [
+        "/Users/keerthikanratnarajah/.nuget/NuGet/NuGet.Config"
+      ],
+      "originalTargetFrameworks": [
+        "net5.0"
+      ],
+      "sources": {
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net5.0": {
+          "targetAlias": "net5.0",
+          "projectReferences": {}
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      }
+    },
+    "frameworks": {
+      "net5.0": {
+        "targetAlias": "net5.0",
+        "dependencies": {
+          "ManagedBass": {
+            "target": "Package",
+            "version": "[4.0.2, )"
+          },
+          "ManagedBass.Fx": {
+            "target": "Package",
+            "version": "[4.0.2, )"
+          },
+          "NetCoreAudio": {
+            "target": "Package",
+            "version": "[2.0.0, )"
+          },
+          "TagLibSharp": {
+            "target": "Package",
+            "version": "[2.3.0, )"
+          }
+        },
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "/usr/local/share/dotnet/sdk/5.0.405/RuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
