@@ -481,3 +481,35 @@ Planned / possible extensions:
    - Press `J` to jump near mix-out.
    - Press `L` when something sounds off to log the context.
 4. Inspect `transition_log.txt` and the `.json` analyses to evolve the heuristics.
+
+---
+
+## 10. Further reading / references
+
+AIDJ uses a mix of standard DSP and music-theory ideas. These links are useful if you want more background.
+
+**Core DSP / analysis concepts**
+- Fast Fourier transform (FFT) – how the spectrum is computed from audio: https://en.wikipedia.org/wiki/Fast_Fourier_transform
+- Spectrogram / time–frequency representation – what the spectral map is conceptually: https://en.wikipedia.org/wiki/Spectrogram
+- Spectral density / spectrum – why aggregating bands gives a rough energy curve: https://en.wikipedia.org/wiki/Spectral_density
+- Chroma feature / chromagram – basis for the chroma-based key detection: https://en.wikipedia.org/wiki/Chroma_feature
+- RMS amplitude and energy in audio – why band sums are a good proxy for loudness/energy: https://en.wikipedia.org/wiki/Root_mean_square#RMS_amplitude
+
+**Rhythm, beat and change detection**
+- Beat (music) – beats and bars: https://en.wikipedia.org/wiki/Beat_(music)
+- Tempo – BPM definition: https://en.wikipedia.org/wiki/Tempo
+- Onset / onset detection – related to the derivative-based change detection used to find mix in/out zones: https://en.wikipedia.org/wiki/Onset_(audio)
+
+**Harmony and keys**
+- Musical key – theory behind the `Key` field: https://en.wikipedia.org/wiki/Musical_key
+- Harmonic mixing – DJ-style harmonic compatibility (Camelot-like systems): https://en.wikipedia.org/wiki/Harmonic_mixing
+
+**Mixing techniques**
+- Crossfade – basic volume blend between tracks: https://en.wikipedia.org/wiki/Crossfade
+- Equalization (audio) – why high-pass / low-pass sweeps change perceived energy: https://en.wikipedia.org/wiki/Equalization_(audio)
+- High-pass filter – used to thin out low-end in outgoing tracks: https://en.wikipedia.org/wiki/High-pass_filter
+- Low-pass filter – used to smooth in highs in incoming tracks: https://en.wikipedia.org/wiki/Low-pass_filter
+
+**Libraries / tools used**
+- BASS audio library – underlying playback / decoding / FX engine: https://www.un4seen.com/
+- ManagedBass – .NET bindings for BASS used by this project (see ManagedBass on GitHub / NuGet).
