@@ -204,8 +204,9 @@ namespace AIDJ.Core.Services
         }
 
         /// <summary>
-        /// Beat-aware mix-in point: first stable high-energy plateau after the intro.
-        /// Works on per-beat energy instead of raw frame thresholds.
+        /// Beat-aware mix-in point using a hybrid of derivative and plateau logic.
+        /// 1) Build per-beat energy, 2) find strong positive changes, 3) validate
+        /// that they lead into a reasonably stable, high-energy plateau.
         /// </summary>
         public static double FindMixInPointBeatAware(List<float[]> spectralMap, float bpm)
         {
@@ -215,25 +216,56 @@ namespace AIDJ.Core.Services
 
             // Compute robust statistics on the first half of the track
             int half = beats.Count / 2;
-            var firstHalfE = beats.Take(Math.Max(half, 1)).Select(b => b.Energy).ToList();
-            double median = firstHalfE.OrderBy(x => x).ElementAt(firstHalfE.Count / 2);
+            var firstHalf = beats.Take(Math.Max(half, 1)).ToList();
+            var firstHalfE = firstHalf.Select(b => b.Energy).OrderBy(x => x).ToList();
+            double median = firstHalfE[firstHalfE.Count / 2];
 
-            double highThresh = median * 1.4; // "groove" threshold relative to typical intro energy
-            int windowBeats = 8;              // require roughly 2 bars of stable energy (at 4/4)
-
-            for (int i = 0; i + windowBeats < beats.Count; i++)
+            // Build a smoothed energy curve over beats
+            int smoothWindow = 3; // beats
+            double[] smoothE = new double[beats.Count];
+            for (int i = 0; i < beats.Count; i++)
             {
-                // skip very beginning to allow for pure intros
-                if (beats[i].Time < 2.0) continue;
+                int start = Math.Max(0, i - smoothWindow);
+                int end = Math.Min(beats.Count - 1, i + smoothWindow);
+                int len = end - start + 1;
+                double sum = 0.0;
+                for (int j = start; j <= end; j++)
+                    sum += beats[j].Energy;
+                smoothE[i] = sum / len;
+            }
 
-                var window = beats.Skip(i).Take(windowBeats).ToList();
+            // Derivative of smoothed energy
+            double[] dE = new double[beats.Count];
+            dE[0] = 0.0;
+            for (int i = 1; i < beats.Count; i++)
+                dE[i] = smoothE[i] - smoothE[i - 1];
+
+            // Use a relative threshold on positive changes to find candidate "drop in" points
+            double absMaxPos = dE.Max(v => Math.Max(0.0, v));
+            double riseThresh = absMaxPos * 0.5; // top ~50% of positive changes
+            double highLevel = median * 1.3;      // plateau should be clearly above intro median
+
+            int plateauBeats = 8; // ~2 bars
+
+            for (int i = 1; i < beats.Count - plateauBeats; i++)
+            {
+                // Skip the very beginning to allow clean intros
+                if (beats[i].Time < 2.0)
+                    continue;
+
+                bool strongRise = dE[i] >= riseThresh;
+                if (!strongRise)
+                    continue;
+
+                // Validate plateau starting at this beat
+                var window = beats.Skip(i).Take(plateauBeats).ToList();
                 double minE = window.Min(b => b.Energy);
                 double maxE = window.Max(b => b.Energy);
 
-                if (minE > highThresh)
+                if (minE > highLevel)
                 {
-                    // also require that energy is not exploding further; we want the start of a plateau
-                    if (maxE < minE * 1.4)
+                    // plateau should be relatively stable (no explosive ramp-up inside plateau)
+                    if (maxE < minE * 1.3)
                         return beats[i].Time;
                 }
             }
@@ -243,8 +275,9 @@ namespace AIDJ.Core.Services
         }
 
         /// <summary>
-        /// Beat-aware mix-out point: last stable high-energy plateau followed by a drop.
-        /// Scans from the end using per-beat energy.
+        /// Beat-aware mix-out point using derivative + plateau:
+        /// find the last stable high-energy plateau that is followed by
+        /// a sustained drop in energy.
         /// </summary>
         public static double FindMixOutPointBeatAware(List<float[]> spectralMap, float bpm, double trackDurationSeconds)
         {
@@ -252,32 +285,72 @@ namespace AIDJ.Core.Services
             if (beats.Count == 0)
                 return Math.Max(0, trackDurationSeconds - 10.0);
 
-            // Work on last half of the track
+            // Work primarily on the last half of the track
             int startIndex = beats.Count / 2;
             var lastHalf = beats.Skip(startIndex).ToList();
             if (lastHalf.Count == 0)
                 lastHalf = beats;
 
-            double median = lastHalf.Select(b => b.Energy).OrderBy(x => x).ElementAt(lastHalf.Count / 2);
-            double highThresh = median * 1.1;  // high relative to late-track median
-            double lowThresh = median * 0.6;   // "outro" level
+            var lastHalfE = lastHalf.Select(b => b.Energy).OrderBy(x => x).ToList();
+            double median = lastHalfE[lastHalfE.Count / 2];
 
-            int plateauBeats = 8; // about 2 bars of stable groove
-            int tailBeats = 8;    // require a number of beats of lower energy afterwards
-
-            for (int i = lastHalf.Count - plateauBeats - tailBeats - 1; i >= 0; i--)
+            // Smoothed energy for lastHalf
+            int smoothWindow = 3;
+            double[] smoothE = new double[lastHalf.Count];
+            for (int i = 0; i < lastHalf.Count; i++)
             {
-                var plateau = lastHalf.Skip(i).Take(plateauBeats).ToList();
-                var tail = lastHalf.Skip(i + plateauBeats).Take(tailBeats).ToList();
+                int s = Math.Max(0, i - smoothWindow);
+                int e = Math.Min(lastHalf.Count - 1, i + smoothWindow);
+                int len = e - s + 1;
+                double sum = 0.0;
+                for (int j = s; j <= e; j++)
+                    sum += lastHalf[j].Energy;
+                smoothE[i] = sum / len;
+            }
+
+            // Derivative of smoothed energy (within lastHalf)
+            double[] dE = new double[lastHalf.Count];
+            dE[0] = 0.0;
+            for (int i = 1; i < lastHalf.Count; i++)
+                dE[i] = smoothE[i] - smoothE[i - 1];
+
+            double absMaxNeg = dE.Min(v => Math.Min(0.0, v)); // most negative value (<=0)
+            double dropThresh = absMaxNeg * 0.5;              // half of the strongest negative drop
+
+            double highLevel = median * 1.1;
+            double lowLevel = median * 0.6;
+
+            int plateauBeats = 8; // ~2 bars of groove
+            int tailBeats = 8;    // ~2 bars of low-energy tail
+
+            // Scan from the end backwards in lastHalf indices
+            for (int i = lastHalf.Count - 2; i >= plateauBeats + tailBeats; i--)
+            {
+                bool strongDrop = dE[i] <= dropThresh;
+                if (!strongDrop)
+                    continue;
+
+                int plateauStart = i - plateauBeats + 1;
+                int tailStart = i + 1;
+                if (plateauStart < 0 || tailStart + tailBeats > lastHalf.Count)
+                    continue;
+
+                var plateau = lastHalf.Skip(plateauStart).Take(plateauBeats).ToList();
+                var tail = lastHalf.Skip(tailStart).Take(tailBeats).ToList();
 
                 double plateauMin = plateau.Min(b => b.Energy);
+                double plateauMax = plateau.Max(b => b.Energy);
                 double tailMax = tail.Max(b => b.Energy);
 
-                if (plateauMin > highThresh && tailMax < lowThresh)
+                if (plateauMin > highLevel && tailMax < lowLevel)
                 {
-                    // mix out near the end of the plateau, but slightly before the actual drop
-                    var beat = plateau.Last();
-                    return Math.Min(beat.Time, Math.Max(0, trackDurationSeconds - 5.0));
+                    // plateau should be relatively stable
+                    if (plateauMax < plateauMin * 1.3)
+                    {
+                        var beat = plateau.Last();
+                        // keep a small safety margin before absolute end
+                        return Math.Min(beat.Time, Math.Max(0, trackDurationSeconds - 5.0));
+                    }
                 }
             }
 

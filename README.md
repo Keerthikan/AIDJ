@@ -157,36 +157,36 @@ In parallel with the spectral bands, AIDJ builds a **chroma vector**:
 
 ### 3.3 Automatic, beat-aware mix-in / mix-out points
 
-Instead of hard thresholds on individual frames, AIDJ now works with a **per-beat energy curve** derived from the spectral map and BPM.
+Instead of hard thresholds on individual frames, AIDJ now works with a **per-beat energy curve** and its **derivative**, derived from the spectral map and BPM.
 
 At a high level:
 
 1. Compute beat length: `beatLen = 60 / BPM`.
-2. For each beat window `[k*beatLen, (k+1)*beatLen)`, average `bass + mids + highs` over all frames in that window.
-3. This gives a sequence of `(beatIndex, timeSeconds, energy)` samples.
+2. For each beat window `[k*beatLen, (k+1)*beatLen)`, average `bass + mids + highs` over all frames in that window → per-beat energy `E[k]`.
+3. Smooth `E[k]` over a few beats to get a stable curve.
+4. Compute a discrete derivative `dE[k] = E_smooth[k] - E_smooth[k-1]`.
 
-**MixInPoint (beat-aware):**
+**MixInPoint (beat-aware, derivative + plateau):**
 
-- Look at the **first half** of the track’s beat energy.
-- Compute a median energy value over that region.
-- Define a “groove plateau” as the first block of ~8 beats (≈2 bars) where:
-  - per-beat energy is consistently above `median * 1.4` (relative high energy), and
-  - the energy within that window is relatively stable (no huge additional jump).
-- The mix-in point is set to the **time of the first beat** of that plateau.
-- Fallback: time of the first beat if no plateau is found.
+- Look at the **first half** of the track’s beat energy to get a robust median intro level.
+- Use the derivative `dE[k]` to find **strong positive changes** (big rises in energy) – candidates for where the groove “drops in”.
+- For each candidate index `k`:
+  - Check the next ~8 beats (≈2 bars) as a plateau window:
+    - per-beat energy stays above a level clearly higher than the intro median,
+    - energy within that window is relatively stable (no huge internal ramp-up).
+- The mix-in point is set to the **time of the first beat** of the first candidate that passes this plateau test.
+- Fallback: time of the first beat if no suitable candidate is found.
 
-**MixOutPoint (beat-aware):**
+**MixOutPoint (beat-aware, derivative + plateau):**
 
-- Work over the **last half** of the track’s beat energy.
-- Compute a median energy value over this late region.
-- Define:
-  - `highThresh ≈ median * 1.1` (late high-energy plateau),
-  - `lowThresh ≈ median * 0.6` (outro/low-energy region).
-- Scan from the end backwards and look for the last block of ~8 beats where:
-  - energy is consistently above `highThresh` (stable groove), and
-  - followed by another ~8 beats where energy stays below `lowThresh` (sustained drop/outro).
-- The mix-out point is placed near the **end of that last plateau**, but slightly before the actual drop, with an additional safety limit a few seconds before the track end.
-- Fallback: a few seconds before the end of the track if no clear pattern is detected.
+- Focus on the **last half** of the track’s beat energy and compute a median late-track energy.
+- Use the derivative `dE[k]` (in the late region) to find **strong negative changes** – candidates for where energy drops into an outro.
+- For each candidate (scanning from the end backwards):
+  - Check a preceding plateau window (~8 beats) and a following tail window (~8 beats):
+    - plateau: high and relatively stable energy, clearly above the late-track median,
+    - tail: consistently lower energy, suggesting an outro or breakdown.
+- The mix-out point is placed near the **end of that last plateau**, but slightly before the actual drop, with an additional safety margin a few seconds before the absolute end of the track.
+- Fallback: a few seconds before the end of the track if no clear candidate satisfies these conditions.
 
 Visually:
 
