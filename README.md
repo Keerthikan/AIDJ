@@ -101,6 +101,14 @@ public class TrackData
 
 ## 3. Offline analysis pipeline
 
+> For background on some of the signal-processing concepts mentioned here, see:
+> - [Fast Fourier transform (FFT)](https://en.wikipedia.org/wiki/Fast_Fourier_transform)
+> - [Spectrogram / time–frequency representation](https://en.wikipedia.org/wiki/Spectrogram)
+> - [Spectral density / spectrum](https://en.wikipedia.org/wiki/Spectral_density)
+> - [Chroma feature / chromagram](https://en.wikipedia.org/wiki/Chroma_feature)
+> - [Root mean square (RMS) and energy in audio](https://en.wikipedia.org/wiki/Root_mean_square#RMS_amplitude)
+> - [Musical key](https://en.wikipedia.org/wiki/Musical_key) and Camelot-style DJ key systems
+
 ### 3.1 FFT and spectral bands
 
 For each track, AIDJ creates a **decode-only** stream with Bass and, on each analysis step, calls:
