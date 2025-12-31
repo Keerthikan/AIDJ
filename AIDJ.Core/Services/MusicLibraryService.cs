@@ -26,7 +26,7 @@ namespace AIDJ.Core.Services
 
             foreach (var file in files)
             {
-                // Bevar den gamle konsoloutput-adfærd: vis hvert track der analyseres
+                // Preserve the original console output behavior: show each track being analyzed
                 Console.Write($"[Processing] {Path.GetFileName(file)}... ");
 
                 var data = _analysisService.AnalyzeTrack(file);

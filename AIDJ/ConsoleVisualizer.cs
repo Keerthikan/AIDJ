@@ -14,33 +14,33 @@ namespace AIDJ
             var key = Console.ReadKey(intercept: true);
             if (key.Key == ConsoleKey.J)
             {
-                // Jump til 10 sekunder før MixOutPoint på det nuværende track
+                // Jump to 10 seconds before MixOutPoint on the current track
                 engine.JumpToPreMixOut(10.0);
             }
             else if (key.Key == ConsoleKey.L)
             {
-                // Log nuværende transitionkontekst for senere analyse
+                // Log current transition context for later analysis
                 TransitionLogger.Log(engine.CurrentTrack, engine.NextTrack, posSeconds);
             }
         }
 
         public static void Render(TrackData current, TrackData next, double pos, float[] bands)
         {
-            // Beregn værdier
+            // Compute derived values
             double introWindow = next != null ? TrackAnalysisService.CalculateIntroWindow(next) : 0;
             int fadeDuration = next != null ? TrackAnalysisService.CalculateIntuitiveFade(current, next) : 0;
             float compatibility = next != null ? TrackAnalysisService.CalculateCompatibility(current, next) : 0;
             bool isHarmonic = next != null && TrackAnalysisService.IsHarmonicNeighbor(current.Key, next.Key);
 
-            // Tegn VU Meters (3-bånds visning, som i den oprindelige version)
+            // Draw VU meters (3-band view, similar to the original version)
             string bassBar = new string('█', Math.Min(25, (int)(bands[0] * 350))).PadRight(25);
             string midBar  = new string('█', Math.Min(25, (int)(bands[1] * 700))).PadRight(25);
             string highBar = new string('█', Math.Min(25, (int)(bands[2] * 1000))).PadRight(25);
 
-            // Vi låser cursoren til toppen af interfacet for at undgå flimmer
+            // Lock the cursor to the top of the interface to avoid flicker
             Console.SetCursorPosition(0, 8);
 
-            // Ryd et fast antal linjer under cursoren for at undgå overlap
+            // Clear a fixed number of lines under the cursor to avoid overlap
             for (int i = 0; i < 15; i++)
             {
                 Console.WriteLine(new string(' ', Console.WindowWidth - 1));
@@ -52,7 +52,7 @@ namespace AIDJ
             Console.WriteLine($">> NEXT: {(next?.Title ?? "None").PadRight(29).Substring(0, 29)} [{next?.Key ?? "???"}] {(next?.Bpm ?? 0):F1} BPM");
             Console.WriteLine("-----------------------------------------------------");
 
-            // Frekvens Monitor
+            // Frequency monitor
             Console.ForegroundColor = ConsoleColor.Red;   Console.WriteLine($"BASS: [{bassBar}] {(bands[0] * 100):F0}%");
             Console.ForegroundColor = ConsoleColor.Green; Console.WriteLine($"MIDS: [{midBar}] {(bands[1] * 100):F0}%");
             Console.ForegroundColor = ConsoleColor.Cyan;  Console.WriteLine($"HIGH: [{highBar}] {(bands[2] * 100):F0}%");
@@ -62,12 +62,12 @@ namespace AIDJ
             Console.WriteLine($"PROGRESS: {pos:F1}s / {current.MixOutPoint:F1}s (Mix Point)      ");
             Console.WriteLine($"INTRO WINDOW (NEXT): {introWindow:F1}s | FADE: {fadeDuration / 1000.0:F1}s      ");
 
-            // Pattern info (hvor mange beats blev brugt til groove-match)
+            // Pattern info (how many beats were used for groove-matching)
             int patternBeats = HeuristicTransitionPlanner.LastPatternBeats;
             string patternText = patternBeats > 0 ? $"{patternBeats} beats" : "N/A";
             Console.WriteLine($"GROOVE PATTERN: {patternText}      ");
 
-            // Confidence Score
+            // Confidence score
             Console.Write("MIX CONFIDENCE: ");
             if (next == null) { Console.WriteLine("N/A                  "); }
             else

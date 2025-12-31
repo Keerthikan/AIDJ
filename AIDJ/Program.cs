@@ -19,7 +19,7 @@ namespace AIDJ
             Console.Clear();
             Console.WriteLine("--- AI DJ CONSOLE (Spectral Sync Mode) ---");
 
-            // macOS library path fix
+        // macOS: ensure native Bass libraries can be found via DYLD_LIBRARY_PATH
             Environment.SetEnvironmentVariable("DYLD_LIBRARY_PATH", AppContext.BaseDirectory);
 
             if (!Bass.Init(-1, 44100, DeviceInitFlags.Default))
@@ -31,7 +31,7 @@ namespace AIDJ
             try
             {
                 var analysisService = new TrackAnalysisService();
-                // Din sti til musikken
+                // Path to the local music library
                 string libraryPath = "/Users/keerthikanratnarajah/RiderProjects/AIDJ/AIDJ/MusicLibrary";
 
                 var libraryService = new MusicLibraryService(analysisService);
@@ -45,7 +45,7 @@ namespace AIDJ
                     return;
                 }
 
-                // Opret DJ-engine til at styre afspilning og track-state
+                // Create the DJ engine to control playback and track state
                 var engine = new DjEngine(library, transitionService, transitionPlanner);
 
                 if (!engine.InitializeFirstTrack())
@@ -58,21 +58,21 @@ namespace AIDJ
                 {
                     var currentTrack = engine.CurrentTrack;
 
-                    // FIND NÆSTE SANG (Smart Selection med flere faktorer)
+                    // Find the next track using multi-factor smart selection
                     engine.SelectNextTrack();
                     var nextTrack = engine.NextTrack;
 
                     bool transitioned = false;
 
-                    // MONITORING LOOP
+                    // Monitoring loop
                     while (Bass.ChannelIsActive(engine.CurrentHandle) == PlaybackState.Playing)
                     {
                         double pos = Bass.ChannelBytes2Seconds(engine.CurrentHandle, Bass.ChannelGetPosition(engine.CurrentHandle));
 
-                        // Håndter konsolinput (fx jump til 10 sek før mix-out eller log 'L')
+                        // Handle console input (e.g. jump 10 seconds before mix-out or log with 'L')
                         ConsoleVisualizer.HandleInput(engine, pos);
 
-                        // Find det rigtige tidspunkt i spectral mappet (sidste element i snapshot er tid)
+                        // Find the corresponding time slice in the spectral map (last element in snapshot is time)
                         var currentSnapshot = currentTrack.SpectralMap?
                             .FirstOrDefault(s => s[s.Length - 1] >= (float)pos);
 
@@ -81,12 +81,12 @@ namespace AIDJ
                             ConsoleVisualizer.Render(currentTrack, nextTrack, pos, currentSnapshot);
                         }
 
-                        // TRANSITION LOGIK
+                        // Transition logic
                         if (pos >= currentTrack.MixOutPoint && !transitioned && nextTrack != null)
                         {
                             transitioned = true;
 
-                            // Forbered transition (opret stream for næste track og generer plan)
+                            // Prepare transition (create stream for the next track and generate a plan)
                             var spec = engine.PrepareTransition();
                             if (spec != null)
                             {
@@ -99,7 +99,7 @@ namespace AIDJ
                         await Task.Delay(50); // CPU-venlig opdateringshastighed
                     }
 
-                    // Skift sang-fokus via engine
+                    // Shift track focus via the engine
                     engine.AdvanceAfterTransition();
                 }
             }
@@ -114,6 +114,6 @@ namespace AIDJ
             }
         }
 
-        // Visualizer-logik er flyttet til ConsoleVisualizer.Render
+        // Visualizer logic has been moved to ConsoleVisualizer.Render
     }
 }

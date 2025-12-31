@@ -26,7 +26,7 @@ namespace AIDJ.Core.Services
         }
 
         /// <summary>
-        /// Vælg første track (langsommeste BPM), fjern det fra biblioteket og start afspilning.
+        /// Choose the first track (slowest BPM), remove it from the library and start playback.
         /// </summary>
         public bool InitializeFirstTrack()
         {
@@ -45,7 +45,7 @@ namespace AIDJ.Core.Services
         }
 
         /// <summary>
-        /// Vælg næste track baseret på TrackSelector (harmoni, BPM, energi).
+        /// Choose the next track based on TrackSelector (harmony, BPM, energy).
         /// </summary>
         public void SelectNextTrack()
         {
@@ -85,7 +85,7 @@ namespace AIDJ.Core.Services
         }
 
         /// <summary>
-        /// Efter en transition er startet og den gamle sang er faded ud, flyt fokus til næste track.
+        /// After a transition has started and the old song has faded out, move focus to the next track.
         /// </summary>
         public void AdvanceAfterTransition()
         {
@@ -102,7 +102,7 @@ namespace AIDJ.Core.Services
         }
 
         /// <summary>
-        /// Hop til et stykke før MixOutPoint på det nuværende track.
+        /// Jump to a position before MixOutPoint on the current track.
         /// </summary>
         public void JumpToPreMixOut(double secondsBefore)
         {

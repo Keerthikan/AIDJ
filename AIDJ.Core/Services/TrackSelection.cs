@@ -6,7 +6,7 @@ namespace AIDJ.Core.Services
 {
     public class DjContext
     {
-        // Ønsket energi-niveau for det næste track (0..1)
+        // Desired energy level for the next track (0..1)
         public float TargetEnergy { get; set; }
     }
 
@@ -16,14 +16,14 @@ namespace AIDJ.Core.Services
         {
             if (current == null || next == null) return float.NegativeInfinity;
 
-            // 1) Harmoni + BPM (eksisterende compatibility)
+            // 1) Harmony + BPM (existing compatibility metric)
             float compat = TrackAnalysisService.CalculateCompatibility(current, next); // 0..1
 
-            // 2) BPM-hop: blød straf, men ingen hard cut
+            // 2) BPM jump: soft penalty, but no hard cut
             float bpmDiff = Math.Abs(current.Bpm - next.Bpm);
             float bpmScore = Math.Max(0f, 1.0f - bpmDiff / 30.0f); // 0 ved ~30 BPM forskel
 
-            // 3) Energi-match i forhold til ønsket target
+            // 3) Energy match relative to desired target
             float desiredEnergy = ctx?.TargetEnergy ?? current.Energy;
             float thisEnergy = next.Energy;
             if (desiredEnergy < 0f) desiredEnergy = 0f;
@@ -32,9 +32,9 @@ namespace AIDJ.Core.Services
             if (thisEnergy > 1f) thisEnergy = 1f;
 
             float energyDiff = Math.Abs(thisEnergy - desiredEnergy); // 0..1
-            float energyScore = 1.0f - energyDiff; // 1 = perfekt match, 0 = helt ved siden af
+            float energyScore = 1.0f - energyDiff; // 1 = perfect match, 0 = completely off
 
-            // 4) Kombiner til samlede score
+            // 4) Combine into total score
             return
                 compat      * 0.5f +
                 energyScore * 0.3f +
@@ -46,7 +46,7 @@ namespace AIDJ.Core.Services
             if (library == null || library.Count == 0 || current == null)
                 return null;
 
-            // Vælg altid et track (øverste score) – så alle i biblioteket til sidst bliver spillet
+            // Always choose the top-scoring track – ensures every track in the library eventually gets played
             return library
                 .OrderByDescending(t => ScoreNext(current, t, ctx))
                 .First();

@@ -78,7 +78,7 @@ namespace AIDJ
             }
             catch
             {
-                // Logging må ikke crashe afspilningen – ignorer fejl
+                // Logging must never crash playback – ignore all errors
             }
         }
     }

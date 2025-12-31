@@ -40,14 +40,17 @@ namespace AIDJ.Core.Services
             var tfile = TagLib.File.Create(filePath);
             var title = tfile.Tag.Title ?? Path.GetFileName(filePath);
 
-            // Simpel energi-måling: gennemsnitlig sum af bass/mid/high over hele tracket
+            // Simple energy measurement: average sum of bass/mid/high over the whole track
             float energy = 0f;
             if (container.Map != null && container.Map.Count > 0)
             {
                 energy = container.Map.Average(f => f[0] + f[1] + f[2]);
                 if (energy < 0f) energy = 0f;
-                if (energy > 1f) energy = 1f; // clamp til [0,1] for scoring
+                if (energy > 1f) energy = 1f; // clamp to [0,1] for scoring
             }
+
+            double mixIn = FindMixInPointBeatAware(container.Map, container.Bpm);
+            double mixOut = FindMixOutPointBeatAware(container.Map, container.Bpm, tfile.Properties.Duration.TotalSeconds);
 
             return new TrackData
             {
@@ -58,8 +61,8 @@ namespace AIDJ.Core.Services
                 Duration = tfile.Properties.Duration,
                 Energy = energy,
                 SpectralMap = container.Map,
-                MixInPoint = FindMixInPoint(container.Map),
-                MixOutPoint = FindMixOutPoint(container.Map)
+                MixInPoint = mixIn,
+                MixOutPoint = mixOut
             };
         }
 
@@ -150,27 +153,136 @@ namespace AIDJ.Core.Services
             return isMinor ? camelotMinor[rootNote] : camelotMajor[rootNote];
         }
 
-        public static double FindMixOutPoint(List<float[]> spectralMap)
+        /// <summary>
+        /// Compute a simple per-beat energy curve from the spectral map and BPM.
+        /// Returns a list of (beatIndex, timeSeconds, energy).
+        /// </summary>
+        private static List<(int BeatIndex, double Time, double Energy)> BuildBeatEnergyCurve(List<float[]> spectralMap, float bpm)
         {
-            int searchStart = (int)(spectralMap.Count * 0.80);
-            for (int i = spectralMap.Count - 2; i > searchStart; i--)
+            var result = new List<(int, double, double)>();
+            if (spectralMap == null || spectralMap.Count == 0 || bpm <= 0)
+                return result;
+
+            int timeIndex = spectralMap[0].Length - 1;
+            double beatLen = 60.0 / bpm;
+
+            double trackSeconds = spectralMap.Last()[timeIndex];
+            int totalBeats = Math.Max(1, (int)Math.Ceiling(trackSeconds / beatLen));
+
+            int frameIndex = 0;
+            for (int beat = 0; beat < totalBeats; beat++)
             {
-                if (spectralMap[i][0] > 0.1f && spectralMap[i + 1][0] < 0.02f)
-                    return spectralMap[i][spectralMap[i].Length - 1];
+                double start = beat * beatLen;
+                double end = start + beatLen;
+
+                double sumEnergy = 0.0;
+                int count = 0;
+
+                // accumulate frames within this beat window
+                while (frameIndex < spectralMap.Count && spectralMap[frameIndex][timeIndex] < start)
+                    frameIndex++;
+
+                int j = frameIndex;
+                while (j < spectralMap.Count && spectralMap[j][timeIndex] < end)
+                {
+                    var frame = spectralMap[j];
+                    double e = frame[0] + frame[1] + frame[2];
+                    sumEnergy += e;
+                    count++;
+                    j++;
+                }
+
+                if (count > 0)
+                {
+                    double avgEnergy = sumEnergy / count;
+                    double midTime = start + beatLen * 0.5;
+                    result.Add((beat, midTime, avgEnergy));
+                }
             }
-            return spectralMap.Last()[spectralMap.Last().Length - 1] - 10;
+
+            return result;
         }
 
-        public static double FindMixInPoint(List<float[]> spectralMap)
+        /// <summary>
+        /// Beat-aware mix-in point: first stable high-energy plateau after the intro.
+        /// Works on per-beat energy instead of raw frame thresholds.
+        /// </summary>
+        public static double FindMixInPointBeatAware(List<float[]> spectralMap, float bpm)
         {
-            int searchLimit = Math.Min(spectralMap.Count, 600);
-            for (int i = 0; i < searchLimit; i++)
+            var beats = BuildBeatEnergyCurve(spectralMap, bpm);
+            if (beats.Count == 0)
+                return 0.0;
+
+            // Compute robust statistics on the first half of the track
+            int half = beats.Count / 2;
+            var firstHalfE = beats.Take(Math.Max(half, 1)).Select(b => b.Energy).ToList();
+            double median = firstHalfE.OrderBy(x => x).ElementAt(firstHalfE.Count / 2);
+
+            double highThresh = median * 1.4; // "groove" threshold relative to typical intro energy
+            int windowBeats = 8;              // require roughly 2 bars of stable energy (at 4/4)
+
+            for (int i = 0; i + windowBeats < beats.Count; i++)
             {
-                // Brug de lavere/mellemste bånd som indikator for "start på groove"
-                if (spectralMap[i][0] > 0.15f || spectralMap[i][1] > 0.2f || spectralMap[i][2] > 0.2f)
-                    return spectralMap[i][spectralMap[i].Length - 1];
+                // skip very beginning to allow for pure intros
+                if (beats[i].Time < 2.0) continue;
+
+                var window = beats.Skip(i).Take(windowBeats).ToList();
+                double minE = window.Min(b => b.Energy);
+                double maxE = window.Max(b => b.Energy);
+
+                if (minE > highThresh)
+                {
+                    // also require that energy is not exploding further; we want the start of a plateau
+                    if (maxE < minE * 1.4)
+                        return beats[i].Time;
+                }
             }
-            return 0.0;
+
+            // fallback: first beat time
+            return beats[0].Time;
+        }
+
+        /// <summary>
+        /// Beat-aware mix-out point: last stable high-energy plateau followed by a drop.
+        /// Scans from the end using per-beat energy.
+        /// </summary>
+        public static double FindMixOutPointBeatAware(List<float[]> spectralMap, float bpm, double trackDurationSeconds)
+        {
+            var beats = BuildBeatEnergyCurve(spectralMap, bpm);
+            if (beats.Count == 0)
+                return Math.Max(0, trackDurationSeconds - 10.0);
+
+            // Work on last half of the track
+            int startIndex = beats.Count / 2;
+            var lastHalf = beats.Skip(startIndex).ToList();
+            if (lastHalf.Count == 0)
+                lastHalf = beats;
+
+            double median = lastHalf.Select(b => b.Energy).OrderBy(x => x).ElementAt(lastHalf.Count / 2);
+            double highThresh = median * 1.1;  // high relative to late-track median
+            double lowThresh = median * 0.6;   // "outro" level
+
+            int plateauBeats = 8; // about 2 bars of stable groove
+            int tailBeats = 8;    // require a number of beats of lower energy afterwards
+
+            for (int i = lastHalf.Count - plateauBeats - tailBeats - 1; i >= 0; i--)
+            {
+                var plateau = lastHalf.Skip(i).Take(plateauBeats).ToList();
+                var tail = lastHalf.Skip(i + plateauBeats).Take(tailBeats).ToList();
+
+                double plateauMin = plateau.Min(b => b.Energy);
+                double tailMax = tail.Max(b => b.Energy);
+
+                if (plateauMin > highThresh && tailMax < lowThresh)
+                {
+                    // mix out near the end of the plateau, but slightly before the actual drop
+                    var beat = plateau.Last();
+                    return Math.Min(beat.Time, Math.Max(0, trackDurationSeconds - 5.0));
+                }
+            }
+
+            // fallback: a bit before the end
+            return Math.Max(0, trackDurationSeconds - 10.0);
         }
 
         public static float CalculateCompatibility(TrackData current, TrackData next)

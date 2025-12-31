@@ -10,23 +10,23 @@ namespace AIDJ.Core.Services
         // 1. STANDARD CROSSFADE (The Blend)
         public async Task Crossfade(int outgoingHandle, int incomingHandle, int durationMs)
         {
-            // 1. Gør Sang B klar med lav volumen
+            // 1. Prepare incoming track B with low initial volume
             Bass.ChannelSetAttribute(incomingHandle, ChannelAttribute.Volume, 0);
 
-            // 2. Valgfrit: Sænk bassen på Sang B i starten (High-Pass filter)
-            // Dette kræver Bass.ChannelSetFX med et Peak/LowShelf filter
+            // 2. Optional: attenuate bass on track B at the start (e.g. high-pass / EQ)
+            //    This would require Bass.ChannelSetFX with an appropriate EQ filter
 
             Bass.ChannelPlay(incomingHandle);
 
-            // 3. Den flydende overgang
+            // 3. Perform the smooth crossfade
             Bass.ChannelSlideAttribute(outgoingHandle, ChannelAttribute.Volume, 0, durationMs);
             Bass.ChannelSlideAttribute(incomingHandle, ChannelAttribute.Volume, 1, durationMs);
 
-            // 4. "The Sweet Spot" - Halvvejs gennem mixet
+            // 4. "The Sweet Spot" - halfway through the mix
             await Task.Delay(durationMs / 2);
 
-            // Her kunne man lave det "intuitive" skift, hvor Sang B overtager kontrollen
-            // f.eks. ved at fjerne EQ-filtreringen på Sang B nu.
+            // This is a potential "intuitive" switch point where track B could take over
+            // (for example by removing any EQ filtering on B here).
 
             await Task.Delay(durationMs / 2 + 500);
 
@@ -81,25 +81,25 @@ namespace AIDJ.Core.Services
             Bass.ChannelStop(currentStream);
         }
 
-        // 3. PLANNED TRANSITION (Parametrisk AI plan)
+        // 3. PLANNED TRANSITION (Parametric AI plan)
         public async Task PlayPlannedTransition(int outgoingHandle, int incomingHandle, TransitionSpec spec)
         {
             if (spec == null || spec.Points == null || spec.Points.Count == 0)
                 return;
 
-            // Juster kun startposition for den INDGÅENDE sang (outgoing fortsætter fra nuværende position)
+            // Only adjust the start position for the incoming track (outgoing continues from its current position)
             if (spec.StartOffsetB > 0)
             {
                 long bytesB = Bass.ChannelSeconds2Bytes(incomingHandle, spec.StartOffsetB);
                 Bass.ChannelSetPosition(incomingHandle, bytesB);
             }
 
-            // Sæt initielle volume
+            // Set initial volumes
             var first = spec.Points[0];
             Bass.ChannelSetAttribute(outgoingHandle, ChannelAttribute.Volume, first.VolumeA);
             Bass.ChannelSetAttribute(incomingHandle, ChannelAttribute.Volume, first.VolumeB);
 
-            // Opsæt simple high/low-pass filtre til A og B
+            // Set up simple high/low-pass filters for A and B
             int fxA = Bass.ChannelSetFX(outgoingHandle, EffectType.BQF, 1);
             int fxB = Bass.ChannelSetFX(incomingHandle, EffectType.BQF, 1);
 
@@ -122,7 +122,7 @@ namespace AIDJ.Core.Services
             Bass.FXSetParameters(fxA, filterA);
             Bass.FXSetParameters(fxB, filterB);
 
-            // Start begge streams
+            // Start both streams
             Bass.ChannelPlay(outgoingHandle);
             Bass.ChannelPlay(incomingHandle);
 
@@ -153,7 +153,7 @@ namespace AIDJ.Core.Services
                 lastTime = p.TimeSeconds;
             }
 
-            // Afslut: fade A helt ud og lad B køre
+            // Finish: fade A completely out and let B continue
             Bass.ChannelSetAttribute(outgoingHandle, ChannelAttribute.Volume, 0);
             Bass.ChannelStop(outgoingHandle);
             Bass.StreamFree(outgoingHandle);

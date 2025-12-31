@@ -155,18 +155,38 @@ In parallel with the spectral bands, AIDJ builds a **chroma vector**:
   - Compare minor vs major third to decide minor/major.
   - Map to a Camelot label (e.g. `"8A"`, `"8B"`) via lookup tables.
 
-### 3.3 Automatic mix-in / mix-out points
+### 3.3 Automatic, beat-aware mix-in / mix-out points
 
-**MixInPoint:**
+Instead of hard thresholds on individual frames, AIDJ now works with a **per-beat energy curve** derived from the spectral map and BPM.
 
-- Look in the first ~60 seconds of the spectral map.
-- First frame where any band crosses a threshold is taken as “groove starts”.
+At a high level:
 
-**MixOutPoint:**
+1. Compute beat length: `beatLen = 60 / BPM`.
+2. For each beat window `[k*beatLen, (k+1)*beatLen)`, average `bass + mids + highs` over all frames in that window.
+3. This gives a sequence of `(beatIndex, timeSeconds, energy)` samples.
 
-- Look backwards over the last ~20% of the track.
-- Find a **bass drop**: a frame where bass is above a threshold and the next frame’s bass is very low.
-- Fallback: last timestamp minus 10 seconds.
+**MixInPoint (beat-aware):**
+
+- Look at the **first half** of the track’s beat energy.
+- Compute a median energy value over that region.
+- Define a “groove plateau” as the first block of ~8 beats (≈2 bars) where:
+  - per-beat energy is consistently above `median * 1.4` (relative high energy), and
+  - the energy within that window is relatively stable (no huge additional jump).
+- The mix-in point is set to the **time of the first beat** of that plateau.
+- Fallback: time of the first beat if no plateau is found.
+
+**MixOutPoint (beat-aware):**
+
+- Work over the **last half** of the track’s beat energy.
+- Compute a median energy value over this late region.
+- Define:
+  - `highThresh ≈ median * 1.1` (late high-energy plateau),
+  - `lowThresh ≈ median * 0.6` (outro/low-energy region).
+- Scan from the end backwards and look for the last block of ~8 beats where:
+  - energy is consistently above `highThresh` (stable groove), and
+  - followed by another ~8 beats where energy stays below `lowThresh` (sustained drop/outro).
+- The mix-out point is placed near the **end of that last plateau**, but slightly before the actual drop, with an additional safety limit a few seconds before the track end.
+- Fallback: a few seconds before the end of the track if no clear pattern is detected.
 
 Visually:
 
